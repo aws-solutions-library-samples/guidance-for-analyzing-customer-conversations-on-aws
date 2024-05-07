@@ -3,7 +3,6 @@ import json
 import os
 
 def lambda_handler(event, context):
-    print(event)
     output_bucket = os.environ.get('OUTPUT_BUCKET')
     input_bucket = event["Records"][0]["s3"]["bucket"]["name"] 
     object_key = event["Records"][0]["s3"]["object"]["key"]
@@ -61,7 +60,5 @@ def parse_transcribe_response(response):
             line+=item['alternatives'][0]['content']
 
     lines.append(line)
-    
-    print('\n\n'.join(lines))
     
     return '\n\n'.join(lines)
