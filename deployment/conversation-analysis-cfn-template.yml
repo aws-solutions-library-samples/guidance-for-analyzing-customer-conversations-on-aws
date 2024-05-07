@@ -1,0 +1,342 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Template for conversation analysis
+
+Parameters:
+  NotificationEmail:
+    Type: String
+    Description: Specify an email address to receive daily reports.
+  SentimentThreshold:
+    Type: Number
+    Default: 7
+    MaxValue: 10
+    MinValue: 1
+    Description: The daily report will only include conversations where the overall sentiment score is less than or equal to this threshold.
+
+Resources:
+  # Transcribe
+  AudioFilesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt StartTranscriptionLambda.Arn
+  
+  AudioFilesBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref AudioFilesBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+            Resource:
+              - !Sub "${AudioFilesBucket.Arn}/*"
+            Principal:
+              AWS:
+                - !GetAtt StartTranscriptionLambdaRole.Arn
+
+                          
+  TranscribeResponsesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt ParseTranscriptionLambda.Arn
+  
+  TranscribeResponsesBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref TranscribeResponsesBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+            - 's3:PutObject'
+          Resource:
+            - !Sub "${TranscribeResponsesBucket.Arn}/*"
+          Principal:
+            AWS:
+              - !GetAtt StartTranscriptionLambdaRole.Arn
+        - Effect: Allow
+          Action:
+            - 's3:GetObject'
+          Resource:
+            - !Sub "${TranscribeResponsesBucket.Arn}/*"
+          Principal:
+            AWS:
+              - !GetAtt ParseTranscriptionLambdaRole.Arn
+
+  StartTranscriptionLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecution
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - transcribe:StartTranscriptionJob
+                Resource:
+                  - '*'
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - !Sub "${TranscribeResponsesBucket.Arn}/*"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  StartTranscriptionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt StartTranscriptionLambdaRole.Arn
+      Runtime: python3.11
+      Timeout: 60
+      Handler: StartTranscription-lambda.lambda_handler
+      Code: StartTranscription-lambda.py
+      Environment:
+        Variables:
+          OUTPUT_BUCKET: !Ref TranscribeResponsesBucket
+
+  StartTranscriptionLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt StartTranscriptionLambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+
+  TxtTranscriptsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: "s3:ObjectCreated:*"
+            Function: !GetAtt OrchestratorLambda.Arn
+
+  ParseTranscriptionLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecution
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - !Sub "${TxtTranscriptsBucket.Arn}/*"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  ParseTranscriptionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt ParseTranscriptionLambdaRole.Arn
+      Runtime: python3.11
+      Timeout: 60
+      Handler: ParseTranscription-lambda.lambda_handler
+      Environment:
+        Variables:
+          OUTPUT_BUCKET: !Ref TxtTranscriptsBucket
+      Code: ParseTranscription-lambda.py
+
+  ParseTranscriptionLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt ParseTranscriptionLambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+
+  # Bedrock and DynamoDB
+  AnalysisTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      BillingMode: "PAY_PER_REQUEST"
+      AttributeDefinitions:
+        - AttributeName: "date"
+          AttributeType: "S"
+        - AttributeName: "s3_uri"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "date"
+          KeyType: "HASH"
+        - AttributeName: "s3_uri"
+          KeyType: "RANGE"
+
+  OrchestratorLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecution
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'bedrock:InvokeModel'
+                Resource:
+                  - "arn:aws:bedrock:*::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
+              - Effect: Allow
+                Action:
+                 - 'dynamodb:PutItem'
+                Resource:
+                  - !GetAtt AnalysisTable.Arn
+      ManagedPolicyArns: 
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+
+  OrchestratorLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Role:
+        !GetAtt OrchestratorLambdaRole.Arn
+      Runtime: "python3.11"
+      Timeout: 60
+      Handler: "orchestrator-lambda.lambda_handler"
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref AnalysisTable
+      Code: orchestrator-lambda.py
+
+  OrchestratorLambdaPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt OrchestratorLambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+
+
+  TxtTranscriptsBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref TxtTranscriptsBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+            Resource:
+              - !Sub "${TxtTranscriptsBucket.Arn}/*"
+            Principal:
+              AWS:
+                - !GetAtt OrchestratorLambdaRole.Arn
+
+  # Notifications
+  DailyReportFiles:
+    Type: 'AWS::S3::Bucket'
+
+  NotificationTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      KmsMasterKeyId: "alias/aws/sns"
+      Subscription:
+        - Endpoint:
+            Ref: NotificationEmail
+          Protocol: "email"
+
+  NotificationLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecution
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                 - 'dynamodb:Query'
+                Resource:
+                  - !GetAtt AnalysisTable.Arn
+              - Effect: Allow
+                Action:
+                 - 's3:PutObject'
+                 - 's3:GetObject'
+                Resource:
+                  - !Sub "${DailyReportFiles.Arn}/*"
+              - Effect: Allow
+                Action:
+                  - 'SNS:Publish'
+                Resource:
+                  !Ref NotificationTopic
+      ManagedPolicyArns: 
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+
+  NotificationLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Role:
+        !GetAtt NotificationLambdaRole.Arn
+      Runtime: "python3.11"
+      Timeout: 60
+      Handler: "notification-lambda.lambda_handler"
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref AnalysisTable
+          S3_BUCKET: !Ref DailyReportFiles
+          SNS_TOPIC: !Ref NotificationTopic
+          SENTIMENT_THRESHOLD: !Ref SentimentThreshold
+      Code: notification-lambda.py
+
+  DailyTrigger:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: 'ConversationAnalysisNotifications'
+      ScheduleExpression: 'cron(0 0 * * ? *)'
+      Targets:
+        - Id: 'NotificationLambdaTarget'
+          Arn: !GetAtt NotificationLambda.Arn
+
+  DailyTriggerPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt NotificationLambda.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: 'events.amazonaws.com'
+      SourceArn: !GetAtt DailyTrigger.Arn
+
