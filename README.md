@@ -114,13 +114,21 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 ## Deployment Steps (required)
 
-Deployment steps must be numbered, comprehensive, and usable to customers at any level of AWS expertise. The steps must include the precise commands to run, and describe the action it performs.
+The solution is deployed using a CloudFormation template, but as this relies on Python code files, the template must be packaged first.
+To package the template:
 
-* All steps must be numbered.
-* If the step requires manual actions from the AWS console, include a screenshot if possible.
-* The steps must start with the following command to clone the repo. ```git clone xxxxxxx```
-* If applicable, provide instructions to create the Python virtual environment, and installing the packages using ```requirement.txt```.
-* If applicable, provide instructions to capture the deployed resource ARN or ID using the CLI command (recommended), or console action.
+1. Clone the repo using command ```git clone aws-solutions-library-samples/guidance-for-conversation-analysis-using-genai-on-aws```
+2. cd to the repo folder ```cd guidance-for-conversation-analysis-using-genai-on-aws```
+3. Create an S3 Bucket in the same region that you will deploy the solution from, noting the name.
+4. From the directory containing the CloudFormation template and the Python code, run the following code, replacing `<S3 Bucket>` with the name of the bucket you created.  
+`aws cloudformation package --template-file conversation-analysis-cfn-template.yml --s3-bucket <S3 Bucket> --output-template-file conversation-analysis-cfn-template.packaged.yml`  
+This creates a packages template file, as well as uploading the code to S3, where it can used by the Lambda functions.
+
+The packaged template file can then be deployed:
+1. Navigate to the [CloudFormation console](https://console.aws.amazon.com/cloudformation) and choose 'Create Stack', 'With new resources'
+2. Choose 'Template is ready' and 'Upload a template file', then upload the packaged template file.
+3. On the next page, specify a name for the stack and an email to receive notifications at
+4. Confirm the details on the next two pages and select 'Submit'
 
  
 **Example:**
@@ -138,6 +146,7 @@ Deployment steps must be numbered, comprehensive, and usable to customers at any
 
 <Provide steps to validate a successful deployment, such as terminal output, verifying that the resource is created, status of the CloudFormation template, etc.>
 
+The deployment should be successful if all of the above steps complete without error. You can browse the resources created by navigating to the CloudFormation service in the AWS Console, finding the stack, and browsing its resources.
 
 **Examples:**
 
@@ -169,6 +178,8 @@ Provide suggestions and recommendations about how customers can modify the param
 
 - Include detailed instructions, commands, and console actions to delete the deployed Guidance.
 - If the Guidance requires manual deletion of resources, such as the content of an S3 bucket, please specify.
+
+The provisioned infrastructure can be deleted by deleting the CloudFormation stack. This will not remove any S3 buckets that are not empty, so it will be necessary to delete these from the S3 console first before deleting the CloudFormation stack.
 
 
 
