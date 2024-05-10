@@ -89,13 +89,13 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 | AWS service  | Dimensions | Cost [USD] |
 | ----------- | ------------ | ------------ |
-| Amazon Transcribe| 1,000,000 REST API calls per month  | $ 3.50month |
-| Amazon S3| 1,000 active users per month without advanced security feature | $ 0.00 |
-| AWS Lambda| 1,000,000 REST API calls per month  | $ 3.50month |
-| Amazon Bedrock | 1,000 active users per month without advanced security feature | $ 0.00 |
-| Amazon DynamoDB| 1,000,000 REST API calls per month  | $ 3.50month |
-| Amazon SNS| 1,000 active users per month without advanced security feature | $ 0.00 |
-| Amazon EventBridge| 1,000 active users per month without advanced security feature | $ 0.00 |
+| Amazon Transcribe| 1000 calls per month each call 10 minutes(1000*10 minutes)  | $ 240 month |
+| Amazon S3| 50 GB with Standard Storage | $ 1.15 month |
+| AWS Lambda| <no of requestes  per month>  | $  |
+| Amazon Bedrock |  | $ 0.00 |
+| Amazon DynamoDB|  | $ 3.50month |
+| Amazon SNS|  | $ 0.00 |
+| Amazon EventBridge|  | $ 0.00 |
 
 
 ## Prerequisites (required)
