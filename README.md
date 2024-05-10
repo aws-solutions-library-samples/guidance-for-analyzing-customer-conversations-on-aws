@@ -1,10 +1,7 @@
-# Guidance Title (required)
+# Solution Guidance for Analyzing Customer Conversation on AWS
 
-The Guidance title should be consistent with the title established first in Alchemy.
 
-**Example:** *Guidance for Product Substitutions on AWS*
 
-This title correlates exactly to the Guidance it’s linked to, including its corresponding sample code repository. 
 
 
 ## Table of Content (required)
@@ -30,16 +27,47 @@ List the top-level sections of the README template, along with a hyperlink to th
 10. [Notices](#notices-optional)
 11. [Authors](#authors-optional)
 
-## Overview (required)
+## Overview
 
-1. Provide a brief overview explaining the what, why, or how of your Guidance. You can answer any one of the following to help you write this:
+This Guidance helps organizations harness the power of voice analytics to improve customer satisfaction. By automatically transcribing and analyzing customer service phone calls, companies can uncover valuable insights that were previously difficult to access. The goal is to provide a data-driven approach to understanding the voice of the customer and identifying key pain points or opportunities to enhance the customer experience.
 
-    - **Why did you build this Guidance?**
-    - **What problem does this Guidance solve?**
+Rather than relying on anecdotal feedback or manual review of call recordings, this solution leverages speech-to-text and natural language processing to automate the transcription and analysis process. This not only saves significant time and resources, but also provides deeper, more comprehensive insights that can inform strategic business decisions.
+By turning customer conversations into actionable data, this Guidance empowers companies to make informed, customer-centric decisions that drive satisfaction and loyalty.
 
-2. Include the architecture diagram image, as well as the steps explaining the high-level overview and flow of the architecture. 
-    - To add a screenshot, create an ‘assets/images’ folder in your repository and upload your screenshot to it. Then, using the relative file path, add it to your README. 
+## Solution Overview
 
+The solution is an implementation of customer conversation analytics, based on transcription and analysis of customer service phone conversations and customer chat. To enable customer conversation analysis, we first need to automatically transcribe the audio recordings of customer service calls using speech-to-text technology. The transcribed text is then analyzed using Claude 3 Haiku model to generate the call/transcript summary, overall sentiment of agent and customer, action items, and confidence scores. These insights are stored in a Dynamo db database to be used for generating reports and triggering email notifications for negative sentiments, allowing management to better understand customer pain points and opportunities to enhance the customer experience.
+
+
+## Conversation Analysis Architecture
+
+![image](https://github.com/aws-solutions-library-samples/guidance-for-conversation-analysis-using-genai-on-aws/blob/main/assets/Conversation%20Analysis.png)
+
+1. Use Amazon Simple Storage(Amazon S3) to store the call recordings from source
+2. Use Amazon Simple Storage(Amazon S3) to store the chat messages from source
+3. An Amazon Simple Storage(Amazon S3) event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in Amazon Simple Storage(Amazon S3)
+4. An AWS Lambda function retrieves the transcription from Amazon Simple Storage(Amazon S3)  and generates a call summary using the Foundation Model in Amazon Bedrock.
+5. AWS Lambda persists the output from Amazon Bedrock like call/transcript summary, overall sentiment of agent and customer ,action items and confidence scores in Amazon DynamoDB
+Amazon EventBridge Scheduler invokes an AWS Lambda function once a day to generate the report of the call summary and call sentiments updated in Amazon DynamoDB within the past 24 hours.
+6. AWS Lambda generates the reports of negative sentiments and stores them in Amazon Simple Storage(Amazon S3) 
+7. An Amazon Simple Storage(Amazon S3) event notification triggers an Amazon SNS notification once the CSV file report is generated and sends an email to the required recipient 
+8. Optionally use Amazon Quick Sight to build business dashboards for monitoring about the services over time
+
+## AWS services used
+- Amazon Transcribe
+- AWS Lambda
+- Amazon Bedrock
+- Amazon S3
+- Amazon DynamoDB
+- Amazon SNS
+- Amazon EventBridge
+- Amazon CloudWatch
+
+## Prerequisites
+
+1. [Bedrock Model access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html) for Claude 3 Haiku Model
+
+   
 ### Cost ( required )
 
 This section is for a high-level cost estimate. Think of a likely straightforward scenario with reasonable assumptions based on the problem the Guidance is trying to solve. Provide an in-depth cost breakdown table in this section below ( you should use AWS Pricing Calculator to generate cost breakdown ).
@@ -61,8 +89,14 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 | AWS service  | Dimensions | Cost [USD] |
 | ----------- | ------------ | ------------ |
-| Amazon API Gateway | 1,000,000 REST API calls per month  | $ 3.50month |
-| Amazon Cognito | 1,000 active users per month without advanced security feature | $ 0.00 |
+| Amazon Transcribe| 1,000,000 REST API calls per month  | $ 3.50month |
+| Amazon S3| 1,000 active users per month without advanced security feature | $ 0.00 |
+| AWS Lambda| 1,000,000 REST API calls per month  | $ 3.50month |
+| Amazon Bedrock | 1,000 active users per month without advanced security feature | $ 0.00 |
+| Amazon DynamoDB| 1,000,000 REST API calls per month  | $ 3.50month |
+| Amazon SNS| 1,000 active users per month without advanced security feature | $ 0.00 |
+| Amazon EventBridge| 1,000 active users per month without advanced security feature | $ 0.00 |
+
 
 ## Prerequisites (required)
 
