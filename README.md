@@ -91,7 +91,7 @@ The following table provides a sample cost breakdown for deploying this Guidance
 | ----------- | ------------ | ------------ |
 | Amazon Transcribe| 1000 calls per month each call 10 minutes(1000*10 minutes)  | $ 240 month |
 | Amazon S3| 50 GB with Standard Storage | $ 1.15 month |
-| AWS Lambda| 100,000 invocations per month | $55 month  |
+| AWS Lambda| 100,000 invocations per month | $ 55 month  |
 | Amazon Bedrock | Anthropic Haiku- 1M input & output tokens | $ 1.50 month |
 | Amazon DynamoDB| 50GB storage,Average item size 100 KB  | $ 12.50 month |
 | Amazon SNS| 1000 email notifications per month | $ 0.00 |
