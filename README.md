@@ -74,7 +74,7 @@ This section is for a high-level cost estimate. Think of a likely straightforwar
 
 Start this section with the following boilerplate text:
 
-_You are responsible for the cost of the AWS services used while running this Guidance. As of <month> <year>, the cost for running this Guidance with the default settings in the <Default AWS Region (Most likely will be US East (N. Virginia)) > is approximately $<n.nn> per month for processing ( <nnnnn> records )._
+_You are responsible for the cost of the AWS services used while running this Guidance. As of May 2024, the cost for running this Guidance with the default settings in the us-east-1 region is approximately $<n.nn> per month for processing ( <nnnnn> records )._
 
 Replace this amount with the approximate cost for running your Guidance in the default Region. This estimate should be per month and for processing/serving resonable number of requests/entities.
 
@@ -89,7 +89,7 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 | AWS service  | Dimensions | Cost [USD] |
 | ----------- | ------------ | ------------ |
-| Amazon Transcribe| 1000 calls per month each call 10 minutes (1000*10 minutes)  | $ 240 month |
+| Amazon Transcribe| 10,00 calls per month with each call 10 minutes (1000*10 minutes) + PII redaction  | $ 264 month |
 | Amazon S3| 50 GB with Standard Storage | $ 1.15 month |
 | AWS Lambda| 3000 invocations per month | $ 0.03 month  |
 | Amazon Bedrock | Anthropic Claude 3 Sonnet - 1M input & output tokens per month | $ 18 month |
