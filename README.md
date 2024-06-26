@@ -46,12 +46,12 @@ The solution is an implementation of customer conversation analytics, based on t
 1. Use Amazon Simple Storage (Amazon S3) to store the call recordings from source
 2. Use Amazon Simple Storage (Amazon S3) to store the chat messages from source
 3. An Amazon Simple Storage (Amazon S3) event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in Amazon Simple Storage(Amazon S3)
-4. An AWS Lambda function retrieves the transcription from Amazon Simple Storage (Amazon S3)  and generates a call summary using the Foundation Model in Amazon Bedrock.
+4. An AWS Lambda function retrieves the transcription from Amazon Simple Storage (Amazon S3)  and generates a call summary using the claude-3-sonnet Foundation Model in Amazon Bedrock using a Pre built Prompt template which can be customised in the Orchestration Lambda Function.
 5. AWS Lambda persists the output from Amazon Bedrock like call/transcript summary, overall sentiment of agent and customer ,action items and confidence scores in Amazon DynamoDB
 Amazon EventBridge Scheduler invokes an AWS Lambda function once a day to generate the report of the call summary and call sentiments updated in Amazon DynamoDB within the past 24 hours.
 6. AWS Lambda generates the reports of negative sentiments and stores them in Amazon Simple Storage(Amazon S3) 
 7. An Amazon Simple Storage (Amazon S3) event notification triggers an Amazon SNS notification once the CSV file report is generated and sends an email to the required recipient 
-8. Optionally use Amazon Quick Sight to build business dashboards for monitoring about the services over time
+8. Optionally use Amazon Quick Sight to build business dashboards for monitoring about the services over time using the Amazon Athena DynamoDB Connector(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
 
 ## AWS services used
 - Amazon Transcribe
