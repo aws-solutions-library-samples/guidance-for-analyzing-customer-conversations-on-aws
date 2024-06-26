@@ -25,6 +25,7 @@ Here is the call that I want you to summarise:
 logger = logging.getLogger(__name__)
 
 def lambda_handler(event, context):
+    print(event)
     # Read the transcript from S3
     print("Reading from S3")
     s3 = boto3.resource("s3")
@@ -39,9 +40,11 @@ def lambda_handler(event, context):
     # Add the reviews to the LLM prompt
     prompt = promptTemplate.format(transcript=data)
     
+    print(prompt)
+    
     # Invoke the LLM
     print("Invoking bedrock")
-    bedrock = boto3.client("bedrock-runtime", region_name="us-west-2") # Bedrock is not currently available in all regions
+    bedrock = boto3.client("bedrock-runtime", region_name=os.environ['AWS_REGION']) # Bedrock is not currently available in all regions
     # Invoke Claude 3 with the text prompt
     model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
     try:
