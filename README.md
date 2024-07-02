@@ -48,13 +48,18 @@ The solution is an implementation of customer conversation analytics, based on t
 1b. Use Amazon Simple Storage (Amazon S3) to store the chat messages from source.This architecture supports both audio files and text inputs, enabling analysis of customer sentiments from voice calls and customer chats. 
 
 2. An Amazon Simple Storage(Amazon S3) event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in Amazon Simple Storage(Amazon S3)
-4. An AWS Lambda function retrieves the transcription from Amazon Simple Storage(Amazon S3)  and generates a call summary using the Foundation Model in Amazon Bedrock. A pre-built Prompt Template is used in the Orchestration Lambda Function, which can be customized as needed
-5. AWS Lambda persists the output from Amazon Bedrock like call/transcript summary, overall sentiment of agent and customer ,action items and confidence scores in Amazon DynamoDB
-6. An AWS Lambda function is triggered daily by an Amazon EventBridge Scheduler which generates a report of the past 24 hours' call summary and sentiments stored in Amazon DynamoDB. The data is captured in a rolling daily window, ensuring access to the most up-to-date information. The EventBridge Cron schedule can be customized as needed. 
-7. An AWS Lambda function generates reports for negative customer sentiments and stores them in an Amazon S3 bucket. This triggers email alerts to relevant teams, allowing them to investigate and address the underlying issues. The sentiment threshold, above which alerts are sent, is customizable via a CloudFormation template 
-8. An Amazon S3 event notification triggers an Amazon SNS email alert when a CSV report of negative customer sentiments is generated. The email contains a pre-signed S3 URL to access the report. The SNS subscription recipients are customizable via a CloudFormation template
-8.Optionally, use Amazon QuickSight to build business dashboards for comprehensive analysis and monitoring service performance over time, leveraging the open source  Amazon Athena DynamoDB connector
-(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
+   
+3. An AWS Lambda function retrieves the transcription from Amazon Simple Storage(Amazon S3)  and generates a call summary using the Foundation Model in Amazon Bedrock. A pre-built Prompt Template is used in the Orchestration Lambda Function, which can be customized as needed.
+   
+4. AWS Lambda persists the output from Amazon Bedrock like call/transcript summary, overall sentiment of agent and customer ,action items and confidence scores in Amazon DynamoDB
+   
+5. An AWS Lambda function is triggered daily by an Amazon EventBridge Scheduler which generates a report of the past 24 hours' call summary and sentiments stored in Amazon DynamoDB. The data is captured in a rolling daily window, ensuring access to the most up-to-date information. The EventBridge Cron schedule can be customized as needed.
+   
+6. An AWS Lambda function generates reports for negative customer sentiments and stores them in an Amazon S3 bucket. This triggers email alerts to relevant teams, allowing them to investigate and address the underlying issues. The sentiment threshold, above which alerts are sent, is customizable via a CloudFormation template.
+    
+7. An Amazon S3 event notification triggers an Amazon SNS email alert when a CSV report of negative customer sentiments is generated. The email contains a pre-signed S3 URL to access the report. The SNS subscription recipients are customizable via a CloudFormation template.
+   
+8.Optionally, use Amazon QuickSight to build business dashboards for comprehensive analysis and monitoring service performance over time, leveraging the open source  Amazon Athena DynamoDB connector(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
 
 ## AWS services used
 - Amazon Transcribe
