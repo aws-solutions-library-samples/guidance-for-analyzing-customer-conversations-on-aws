@@ -43,9 +43,11 @@ The solution is an implementation of customer conversation analytics, based on t
 
 ![image](https://github.com/aws-solutions-library-samples/guidance-for-conversation-analysis-using-genai-on-aws/blob/main/assets/Conversation%20Analysis.png)
 
-1.Use Amazon Simple Storage (Amazon S3) to store the call recordings from source
+1a.Use Amazon Simple Storage (Amazon S3) to store the call recordings from source
 
-2.Use Amazon Simple Storage (Amazon S3) to store the chat messages from source.This architecture supports both audio files and text inputs, enabling analysis of customer sentiments from voice calls and customer chats. 
+2b.Use Amazon Simple Storage (Amazon S3) to store the chat messages from source.This architecture supports both audio files and text inputs, enabling analysis of customer sentiments from voice calls and customer chats. 
+
+3.  An Amazon Simple Storage(Amazon S3) event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in Amazon Simple Storage(Amazon S3)
 
 4. An Amazon Simple Storage(Amazon S3) event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in Amazon Simple Storage(Amazon S3)
    
