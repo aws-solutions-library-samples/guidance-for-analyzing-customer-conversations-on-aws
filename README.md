@@ -46,6 +46,7 @@ The solution is an implementation of customer conversation analytics, based on t
 1a. Use Amazon Simple Storage (Amazon S3) to store the call recordings from source
 
 1b. Use Amazon Simple Storage (Amazon S3) to store the chat messages from source.This architecture supports both audio files and text inputs, enabling analysis of customer sentiments from voice calls and customer chats. 
+
 2. An Amazon Simple Storage(Amazon S3) event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in Amazon Simple Storage(Amazon S3)
    
 3. An AWS Lambda function retrieves the transcription from Amazon Simple Storage(Amazon S3)  and generates a call summary using the Foundation Model in Amazon Bedrock. A pre-built Prompt Template is used in the Orchestration Lambda Function, which can be customized as needed.
