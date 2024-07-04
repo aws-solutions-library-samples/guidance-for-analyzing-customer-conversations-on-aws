@@ -44,24 +44,23 @@ These insights are stored in a DynamoDB database, powering reporting and email n
 
 ![image](https://github.com/aws-solutions-library-samples/guidance-for-conversation-analysis-using-genai-on-aws/blob/main/assets/Conversation%20Analysis.png)
 
-1a.Use Amazon Simple Storage(Amazon S3) to store the chat messages between a retail customer and a customer service agent. 
+1a.Amazon Simple Storage Service (Amazon S3) is used to store the contact center chat transcripts as text files.
 
-1b.Use  Amazon S3 to store the call recordings between a retail customer and a customer service agent. This could showcase typical inquiries from customers about product information, order status, returns, or other common retail-related topics.
+1b.The contact center call recordings are stored on another Amazon S3 storage bucket, which is configured to call an AWS Lambda function when an object is created.
 
-2.An Amazon S3 event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in S3 Amazon S3
-   
-3.An AWS Lambda function retrieves the transcription from Amazon S3 and generates a call or chat messages summary using the Foundation Model in Amazon Bedrock. A pre-built Prompt Template is used in the Orchestration Lambda Function, which can be customized as needed.
+2.AWS Lambda function uses Amazon Transcribe to convert the audio call into a text file and stores the resultant text files in the output S3 location.
   
-4.AWS Lambda persists the output from Amazon Bedrock like call or chat summary, overall sentiment of agent and customer ,action items and confidence scores in Amazon DynamoDB
-   
-5.A daily AWS Lambda function is triggered by an Amazon EventBridge Scheduler. The EventBridge Cron schedule can be customized as needed to accommodate the business's preferences.
-   
-6.The AWS Lambda function generates a daily report of negative customer sentiment from voice calls and retail chat messages retrieved from Amazon DynamoDB in the previous 24 hours. This data is then pushed to an Amazon S3 bucket, empowering retail teams to promptly investigate and address underlying customer issues. The sentiment threshold triggering alerts can be customized via the  CloudFormation template, allowing the retail business to stay proactive in improving the overall customer experience.
+3.The S3 buckets storing text transcripts (step 1.a) and output of Amazon Transcribe (step 2), are configured to call an AWS Lambda when a new object is available. This Lambda function uses Amazon Bedrock hosted Anthropic Claude 3.5 Sonnet model to generate summary and sentiment of the contact center conversations in the input file. This function also uses a prompt template that can be customized as needed to control input context passed to the foundation models.
 
+4.AWS Lambda then parses the JSON output from Amazon Bedrock and persists the key details like conversation summary, customer and agent sentiments, confidence scores and action items derived from the conversations in Amazon DynamoDB.
+  
+5.A time triggered Amazon EventBridge scheduler calls another AWS Lambda function at a pre-set time. 
+  
+6.The AWS Lambda function reads the data from Amazon DynamoDB to generate a CSV file with the analysis results of the contact center conversations in the past 24 hours, whose sentiment scores are below a pre-defined threshold. This CSV file is then stored on Amazon S3.
     
-7.An Amazon S3 event notifications trigger email alerts via Amazon SNS when a CSV report of negative customer sentiments is generated. The email includes a pre-signed S3 URL, allowing retail teams to quickly access the report. The SNS subscription recipients are customizable via CloudFormation, ensuring the insights reach the right stakeholders to promptly address customer issues
+7.Amazon S3, then triggers an event to call Amazon Simple Notification Service, which sends an email to the subscribed users. These business users, can review the analysis results and take necessary actions to improve the customer experiences.
    
-8.Optionally, use Amazon QuickSight to build business dashboards for comprehensive analysis and monitoring service performance over time, leveraging a prebuilt Amazon Athena DynamoDB connector(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
+8.Optionally, the retailers can use Amazon QuickSight to build visual dashboards and monitor the conversation analysis results over time. Amazon Athena Dynamo DB connector can be used to retrieve data from Amazon DynamoDB for use on Amazon QuickSight.(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
 
 ## AWS services used
 - Amazon Transcribe
