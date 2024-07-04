@@ -73,11 +73,6 @@ These insights are stored in a DynamoDB database, powering reporting and email n
 - Amazon SNS
 - Amazon EventBridge
 - Amazon CloudWatch
-
-## Prerequisites
-
-1. [Bedrock Model access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html) for Claude 3 Sonnet Model
-
    
 ### Cost ( required )
 
@@ -109,7 +104,7 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 ## Prerequisites (required)
 
-This deployment requires you to have access to the Claude 3 Sonnet model. This can be requested through the Bedrock console.
+This deployment requires you to have access to the Claude 3 Sonnet model. This can be requested through the Bedrock console.[Bedrock Model access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html) for Claude 3 Sonnet Model
 
 ## Deployment Steps (required)
 
