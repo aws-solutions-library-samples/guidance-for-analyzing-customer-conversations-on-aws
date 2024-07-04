@@ -4,7 +4,7 @@
 
 
 
-## Table of Content (required)
+## Table of Contents (required)
 
 List the top-level sections of the README template, along with a hyperlink to the specific section.
 
@@ -20,46 +20,48 @@ List the top-level sections of the README template, along with a hyperlink to th
 6. [Next Steps](#next-steps-required)
 7. [Cleanup](#cleanup-required)
 
-***Optional***
-
-8. [FAQ, known issues, additional considerations, and limitations](#faq-known-issues-additional-considerations-and-limitations-optional)
-9. [Revisions](#revisions-optional)
-10. [Notices](#notices-optional)
-11. [Authors](#authors-optional)
 
 ## Overview
 
-This Guidance helps organizations harness the power of voice analytics to improve customer satisfaction. By automatically transcribing and analyzing customer service phone calls, companies can uncover valuable insights that were previously difficult to access. The goal is to provide a data-driven approach to understanding the voice of the customer and identifying key pain points or opportunities to enhance the customer experience.
+This Guidance helps organizations harness the power of voice and chat analytics to improve customer satisfaction and loyalty. By automatically transcribing and analyzing customer service phone calls as well as online chat interactions, retailers can uncover valuable insights that were previously difficult to access.
 
-Rather than relying on anecdotal feedback or manual review of call recordings, this solution leverages speech-to-text and natural language processing to automate the transcription and analysis process. This not only saves significant time and resources, but also provides deeper, more comprehensive insights that can inform strategic business decisions.
-By turning customer conversations into actionable data, this Guidance empowers companies to make informed, customer-centric decisions that drive satisfaction and loyalty.
+The goal is to provide a data-driven approach to truly understanding the voice of the retail customer. This allows identification of key pain points or opportunities to enhance the overall shopping experience - from the customer's perspective.
+
+Rather than relying solely on anecdotal feedback or manual review of call/chat logs, this solution leverages speech-to-text and natural language processing to automate the transcription and analysis process. This not only saves significant time and resources for retail teams, but also provides deeper, more comprehensive insights that can directly inform strategic business decisions.
+
+By turning rich customer conversations into actionable data, this solution empowers retailers to make informed, customer-centric decisions that drive satisfaction, loyalty, and ultimately, sales growth
 
 ## Solution Overview
 
-The solution is an implementation of customer conversation analytics, based on transcription and analysis of customer service phone conversations and customer chat. To enable customer conversation analysis, we first need to automatically transcribe the audio recordings of customer service calls using speech-to-text technology. The transcribed text is then analyzed using Claude 3 Sonnet model to generate the call/transcript summary, overall sentiment of agent and customer, action items, and confidence scores. These insights are stored in a DynamoDB database to be used for generating reports and triggering email notifications for negative sentiments, allowing management to better understand customer pain points and opportunities to enhance the customer experience.
+This solution provides comprehensive customer conversation analytics, leveraging transcription and analysis of both customer service phone calls and online chat interactions.
+
+To enable this analysis, the system first automatically transcribes audio recordings of customer calls using Amazon Transcribe.The transcribed text from both voice calls and chat messages are then analyzed using the Claude 3 Sonnet model to generate valuable insights - including call/chat summaries, overall sentiment of both the agent and customer, identified action items, and confidence scores.
+
+These insights are stored in a DynamoDB database, powering reporting and email notifications triggered by negative customer sentiments. This empowers retail management to better understand customer pain points across voice and digital channels, and uncover opportunities to enhance the overall shopping experience
 
 
 ## Conversation Analysis Architecture
 
 ![image](https://github.com/aws-solutions-library-samples/guidance-for-conversation-analysis-using-genai-on-aws/blob/main/assets/Conversation%20Analysis.png)
 
-1a.Use Amazon Simple Storage (Amazon S3) to store the call recordings from source
+1a.Use Amazon Simple Storage(Amazon S3) to store the chat messages between a retail customer and a customer service agent. 
 
-1b.Use Amazon Simple Storage (Amazon S3) to store the chat messages from source.This architecture supports both audio files and text inputs, enabling analysis of customer sentiments from voice calls and customer chats. 
+1b.Use  Amazon S3 to store the call recordings between a retail customer and a customer service agent. This could showcase typical inquiries from customers about product information, order status, returns, or other common retail-related topics.
 
-2.An Amazon Simple Storage(Amazon S3) event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in Amazon Simple Storage(Amazon S3)
+2.An Amazon S3 event notication invokes an AWS Lambda which transcribes the recording using  Amazon Transcribe and stores the transcription in S3 Amazon S3
    
-3.An AWS Lambda function retrieves the transcription from Amazon Simple Storage(Amazon S3)  and generates a call summary using the Foundation Model in Amazon Bedrock. A pre-built Prompt Template is used in the Orchestration Lambda Function, which can be customized as needed.
+3.An AWS Lambda function retrieves the transcription from Amazon S3 and generates a call or chat messages summary using the Foundation Model in Amazon Bedrock. A pre-built Prompt Template is used in the Orchestration Lambda Function, which can be customized as needed.
+  
+4.AWS Lambda persists the output from Amazon Bedrock like call or chat summary, overall sentiment of agent and customer ,action items and confidence scores in Amazon DynamoDB
    
-4.An AWS Lambda persists the output from Amazon Bedrock like call/transcript summary, overall sentiment of agent and customer ,action items and confidence scores in Amazon DynamoDB
+5.A daily AWS Lambda function is triggered by an Amazon EventBridge Scheduler. The EventBridge Cron schedule can be customized as needed to accommodate the business's preferences.
    
-5.An AWS Lambda function is triggered daily by an Amazon EventBridge Scheduler which generates a report of the past 24 hours' call summary and sentiments stored in Amazon DynamoDB. The data is captured in a rolling daily window, ensuring access to the most up-to-date information. The EventBridge Cron schedule can be customized as needed.
-   
-6.An AWS Lambda function generates reports for negative customer sentiments and stores them in an Amazon S3 bucket. This triggers email alerts to relevant teams, allowing them to investigate and address the underlying issues. The sentiment threshold, above which alerts are sent, is customizable via a CloudFormation template.
+6.The AWS Lambda function generates a daily report of negative customer sentiment from voice calls and retail chat messages retrieved from Amazon DynamoDB in the previous 24 hours. This data is then pushed to an Amazon S3 bucket, empowering retail teams to promptly investigate and address underlying customer issues. The sentiment threshold triggering alerts can be customized via the  CloudFormation template, allowing the retail business to stay proactive in improving the overall customer experience.
+
     
-7.An Amazon S3 event notification triggers an Amazon SNS email alert when a CSV report of negative customer sentiments is generated. The email contains a pre-signed S3 URL to access the report. The SNS subscription recipients are customizable via a CloudFormation template.
+7.An Amazon S3 event notifications trigger email alerts via Amazon SNS when a CSV report of negative customer sentiments is generated. The email includes a pre-signed S3 URL, allowing retail teams to quickly access the report. The SNS subscription recipients are customizable via CloudFormation, ensuring the insights reach the right stakeholders to promptly address customer issues
    
-8.Optionally, use Amazon QuickSight to build business dashboards for comprehensive analysis and monitoring service performance over time, leveraging the open source  Amazon Athena DynamoDB connector(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
+8.Optionally, use Amazon QuickSight to build business dashboards for comprehensive analysis and monitoring service performance over time, leveraging a prebuilt Amazon Athena DynamoDB connector(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
 
 ## AWS services used
 - Amazon Transcribe
@@ -67,6 +69,7 @@ The solution is an implementation of customer conversation analytics, based on t
 - Amazon Bedrock
 - Amazon S3
 - Amazon DynamoDB
+- Amazon Athena
 - Amazon SNS
 - Amazon EventBridge
 - Amazon CloudWatch
