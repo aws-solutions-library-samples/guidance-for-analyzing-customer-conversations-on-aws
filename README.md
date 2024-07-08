@@ -4,7 +4,7 @@
 
 
 
-## Table of Contents (required)
+## Table of Contents
 
 List the top-level sections of the README template, along with a hyperlink to the specific section.
 
@@ -36,9 +36,9 @@ By turning rich customer conversations into actionable data, this solution empow
 
 This solution provides comprehensive customer conversation analytics, leveraging transcription and analysis of both customer service phone calls and online chat interactions.
 
-To enable this analysis, the system first automatically transcribes audio recordings of customer calls using Amazon Transcribe.The transcribed text from both voice calls and chat messages are then analyzed using the Claude 3 Sonnet model to generate valuable insights - including call/chat summaries, overall sentiment of both the agent and customer, identified action items, and confidence scores.
+To enable this analysis, the system first automatically transcribes audio recordings of customer calls using Amazon Transcribe.The transcribed text from voice calls and text messages from the chat conversations, are then analyzed using the foundation model to generate valuable insights - including conversation summary, overall sentiment of both the agent and customer, derived action items from the conversation, and foundation model confidence scores on the sentiment scores.
 
-These insights are stored in a DynamoDB database, powering reporting and email notifications triggered by negative customer sentiments. This empowers retail management to better understand customer pain points across voice and digital channels, and uncover opportunities to enhance the overall shopping experience
+These insights are stored in a DynamoDB table, empowering retailers generate reports and send email notifications to the cencerned teams, so they can review the analysis results of conversations whose sentiment scores are below the preset threshold. This helps retail management to better understand customer pain points, and uncover opportunities to enhance the overall shopping experience for customers.
 
 
 ## Conversation Analysis Architecture
@@ -51,7 +51,7 @@ These insights are stored in a DynamoDB database, powering reporting and email n
 
 2.AWS Lambda function uses Amazon Transcribe to convert the audio call into a text file and stores the resultant text files in the output S3 location.
   
-3.The S3 buckets storing text transcripts (step 1.a) and output of Amazon Transcribe (step 2), are configured to call an AWS Lambda when a new object is available. This Lambda function uses Amazon Bedrock hosted Anthropic Claude 3.5 Sonnet model to generate summary and sentiment of the contact center conversations in the input file. This function also uses a prompt template that can be customized as needed to control input context passed to the foundation models.
+3.The S3 buckets storing text transcripts (step 1.a) and output of Amazon Transcribe (step 2), are configured to call an AWS Lambda when a new object is available. This Lambda function uses Amazon Bedrock hosted Anthropic Claude 3 Sonnet model to generate summary and sentiment of the contact center conversations in the input file. This function also uses a prompt template that can be customized as needed to control input context passed to the foundation models.
 
 4.AWS Lambda then parses the JSON output from Amazon Bedrock and persists the key details like conversation summary, customer and agent sentiments, confidence scores and action items derived from the conversations in Amazon DynamoDB.
   
@@ -145,7 +145,7 @@ The deployment has completed successfully if all of the above steps complete wit
 
 ## Running the Guidance
 
-Let's consider an example where a customer contacts support to raise a complaint about their in-store experience. You decide to deploy this guidance to receive daily reports on calls where the overall sentiment is negative (i.e. a sentiment threshold below 5) and capture details about the call such as the agent and customer sentiment, summary of the call and action items from the call for both the agent and customer.
+Let's consider an example where a customer contacts customer-support to raise a complaint about their in-store experience. You decide to deploy this guidance to receive daily reports on calls where the overall sentiment is negative (i.e. a sentiment threshold below 5) and capture details about the call such as the agent and customer sentiment, summary of the call and action items from the call for both the agent and customer.
 
 1. Place the call recording in the Audio Files bucket. Alternatively, if you have chat transcripts, place them in the Transcripts bucket. You can upload a file to the S3 bucket by following the instructions [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/upload-objects.html).
 2. You can view the outputs for the call in the created DynamoDB table which will capture details such as the agent and customer sentiment, summary of the call and action items from the call for both the agent and customer.
