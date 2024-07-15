@@ -291,6 +291,7 @@ Resources:
               - Effect: Allow
                 Action:
                  - 'dynamodb:Query'
+                 - 'dynamodb:Scan'
                 Resource:
                   - !GetAtt AnalysisTable.Arn
               - Effect: Allow

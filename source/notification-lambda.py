@@ -9,10 +9,12 @@ def lambda_handler(event, context):
     table = dynamodb.Table(os.environ["DYNAMODB_TABLE"])
     yesterday = (datetime.today() - timedelta(days=1)).strftime('%d-%m-%Y')
     sentiment_threshold = int(os.environ["SENTIMENT_THRESHOLD"])
-
-    response = table.query(KeyConditionExpression=Key("date").eq(yesterday), FilterExpression=Attr("overall_sentiment_score").lte(sentiment_threshold))
-    entries = response["Items"]
     
+    if event.get("env", None) == "demo":
+        response = table.scan(FilterExpression=Attr("overall_sentiment_score").lte(sentiment_threshold))
+    else:
+        response = table.query(KeyConditionExpression=Key("date").eq(yesterday), FilterExpression=Attr("overall_sentiment_score").lte(sentiment_threshold))
+    entries = response["Items"]
     # Only continue if there are entries from yesterday
     if len(entries) == 0:
         print("No entries for yesterday")
@@ -54,3 +56,5 @@ def lambda_handler(event, context):
     sns = boto3.resource('sns')
     topic = sns.Topic(os.environ["SNS_TOPIC"])
     topic.publish(Subject="Customer Conversations Analysis", Message="The report for yesterday is ready. " + url)
+    
+    return "Report has been sent."
