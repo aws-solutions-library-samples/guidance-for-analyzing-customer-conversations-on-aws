@@ -145,11 +145,42 @@ The deployment has completed successfully if all of the above steps complete wit
 
 ## Running the Guidance
 
-Let's consider an example where a customer contacts customer-support to raise a complaint about their in-store experience. You decide to deploy this guidance to receive daily reports on calls where the overall sentiment is negative (i.e. a sentiment threshold below 5) and capture details about the call such as the agent and customer sentiment, summary of the call and action items from the call for both the agent and customer.
+Let's consider an example where a customer contacts customer-support to report a lost card. You decide to deploy this guidance to receive daily reports on calls where the overall sentiment is negative (i.e. a sentiment threshold below 5) and capture details about the call such as the agent and customer sentiment, summary of the call and action items from the call for both the agent and customer.
 
-1. Place the call recording in the Audio Files bucket. Alternatively, if you have chat transcripts, place them in the Transcripts bucket. You can upload a file to the S3 bucket by following the instructions [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/upload-objects.html).
-2. You can view the outputs for the call in the created DynamoDB table which will capture details such as the agent and customer sentiment, summary of the call and action items from the call for both the agent and customer.
-3. You will be emailed a daily report with all the conversations which fall below the defined sentiment threshold so you can review the summary and action items to efficiently follow up and identify if the issue was resolved without having to review the entire conversation.
+1. Place the call recording in the Audio Files bucket. Alternatively, if you have chat transcripts, place them in the Transcripts bucket.
+2. From the root of the project, navigate to the sample-files directory. In this directory is a sample call recording named demo-call.mp3
+```
+cd guidance-for-conversation-analysis-using-genai-on-aws/sample-files
+```
+
+3. Using the AWS CLI s3 [cp](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/s3/cp.html) command, upload the sample call recording to the audio files S3 bucket.
+```
+aws s3 cp demo-call.mp3 s3://<bucket-name>
+```
+Replace bucket-name with the name of the audio files s3 bucket which was created while deploying the CloudFormation stack. To find this, navigate to the CloudFormation console, click on the stack you created for this project, click on the “Resources” tab, find the line item with the logical ID “AudioFilesBucket”, the “Physical ID” is the name of the bucket. 
+
+
+2. After 3-5 minutes, you can view the outputs for the call in the created DynamoDB table which will capture details such as the agent and customer sentiment, summary of the call and action items from the call for both the agent and customer. The DynamoDB table can be located in the Resources tab in the CloudFormation console, with the logical ID "AnalysisTable". An example screenshot of the table in the DynamoDB console is shown below.\
+![image](assets/DynamoDB%20Table.png)
+
+3. You will receive an email from AWS asking you to confirm your SNS subscription. Click "Confirm subscription" in the email.
+
+4. By default this guidance is configured to have a daily report of sentiment that falls below the defined threshold. However, to showcase this feature, you can also trigger a manual report generation by manually triggering the "NotificationLambda" function.
+
+4. Navigate to the CloudFormation console, click on the stack you created for this project, click on the “Resources” tab, find the line item with the logical ID “NotificationLambda” and click the hyperlink in the physical ID column to navigate to the lambda console.
+
+5. Click "Test" and enter "DemoEvent" for the "Event Name" field.
+
+6. Copy and past the following for the event JSON and click "Save".
+```json
+{
+  "env": "demo"
+}
+```
+7. Click "Test" and that will trigger an email with all reports in the database taht fall below the sentiment threshold.
+![image](assets/Notification%20Lambda.png)
+
+
 4. You can optionally visualise the DynamoDB databse in QuickSight to gain insights on common complaints from customers and frequent agent action items to identify areas for optimization.
 
 
@@ -169,10 +200,11 @@ You can also extend this guidance by using the Athena DynamoDB connector with Qu
 ## Cleanup
 
 1. Follow the [instructions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/empty-bucket.html) to empty all the S3 buckets that were deployed by this stack
-2. Navigate to the [CloudFormation console](https://console.aws.amazon.com/cloudformation)
-3. Select the stack named [CFN Stack Name]
-4. In the stack details pane, choose Delete.
-5. Select Delete stack when prompted.
+2. Repeat the above step for the S3 bucket you created in Step 3 of the [Deployment steps](#deployment-steps).
+3. Navigate to the [CloudFormation console](https://console.aws.amazon.com/cloudformation)
+4. Select the stack named [CFN Stack Name]
+5. In the stack details pane, choose Delete.
+6. Select Delete stack when prompted.
 
 Cleanup is complete when the stack is in the DELETE_COMPLETE state.
 
