@@ -177,7 +177,7 @@ Replace bucket-name with the name of the audio files s3 bucket which was created
   "env": "demo"
 }
 ```
-7. Click "Test" and that will trigger an email with all reports in the database taht fall below the sentiment threshold.
+7. Click "Test" and that will trigger an email with all reports in the database that fall below the sentiment threshold.
 ![image](assets/Notification%20Lambda.png)
 
 
