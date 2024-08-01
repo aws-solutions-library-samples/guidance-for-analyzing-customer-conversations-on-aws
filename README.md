@@ -194,7 +194,7 @@ You can adjust the sentiment threshold that controls when a conversation is adde
 5. Update the SentimentThresholdParameter and click Next
 6. Leave all other settings as default and submit the changes.
 
-You can also extend this guidance by using the Athena DynamoDB connector with QuickSight to visualise the conversation analysis results over time.
+You can also extend this guidance to use the analysis metrics and build BI dashboards to visualize and compare data over a period of time. 
 
 ## Cleanup
 
