@@ -61,7 +61,7 @@ These insights are stored in a DynamoDB table, empowering retailers generate rep
     
 7.Amazon S3, then triggers an event to call Amazon Simple Notification Service, which sends an email to the subscribed users. These business users, can review the analysis results and take necessary actions to improve the customer experiences.
    
-8.Optionally, the retailers can use Amazon QuickSight to build visual dashboards and monitor the conversation analysis results over time. Amazon Athena Dynamo DB connector can be used to retrieve data from Amazon DynamoDB for use on Amazon QuickSight.(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
+
 
 ## AWS services used
 - Amazon Transcribe
@@ -69,7 +69,6 @@ These insights are stored in a DynamoDB table, empowering retailers generate rep
 - Amazon Bedrock
 - Amazon S3
 - Amazon DynamoDB
-- Amazon Athena
 - Amazon SNS
 - Amazon EventBridge
 - Amazon CloudWatch
