@@ -75,7 +75,9 @@ These insights are stored in a DynamoDB table, empowering retailers generate rep
    
 ### Cost
 
-_You are responsible for the cost of the AWS services used while running this Guidance. As of May 2024, the cost for running this Guidance with the default settings in the us-east-1 region is approximately $140 per month for processing 1000 calls that average 5 minutes in length.
+_You are responsible for the cost of the AWS services used while running this Guidance. As of May 2024, the cost for running this Guidance with the default settings in the us-east-1 region is approximately $140 per month for processing 1000 calls that average 5 minutes in length._
+
+_We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
 
 ### Sample Cost Table
 
@@ -91,8 +93,6 @@ The following table provides a sample cost breakdown for deploying this Guidance
 | Amazon SNS| 1000 email notifications per month | $ 0.00 |
 | Amazon EventBridge| 1000 invocations per month | $ 0.00 |
 
-
-_We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
 
 
 ## Prerequisites
