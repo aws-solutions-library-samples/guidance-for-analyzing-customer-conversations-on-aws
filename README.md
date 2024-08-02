@@ -75,9 +75,7 @@ These insights are stored in a DynamoDB table, empowering retailers generate rep
    
 ### Cost
 
-_You are responsible for the cost of the AWS services used while running this Guidance. As of May 2024, the cost for running this Guidance with the default settings in the us-east-1 region is approximately $300 per month for processing 1000 calls that average 10 minutes in length._
-
-_We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
+_You are responsible for the cost of the AWS services used while running this Guidance. As of May 2024, the cost for running this Guidance with the default settings in the us-east-1 region is approximately $140 per month for processing 1000 calls that average 5 minutes in length.
 
 ### Sample Cost Table
 
@@ -85,13 +83,16 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 | AWS service  | Dimensions | Cost [USD] |
 | ----------- | ------------ | ------------ |
-| Amazon Transcribe| 10,00 calls per month with each call 10 minutes (1000*10 minutes) + PII redaction  | $ 264 month |
-| Amazon S3| 50 GB with Standard Storage | $ 1.15 month |
+| Amazon Transcribe| 1000 calls per month with each call 10 minutes (1000*10 minutes) + PII redaction  | $ 122 month |
+| Amazon S3| 5 GB with Standard Storage | $ 0.15 month |
 | AWS Lambda| 3000 invocations per month | $ 0.03 month  |
 | Amazon Bedrock | Anthropic Claude 3 Sonnet - 1M input & output tokens per month | $ 18 month |
-| Amazon DynamoDB| 50GB storage,Average item size 100 KB  | $ 12.50 month |
+| Amazon DynamoDB| 1GB storage, with average item size 100 KB. Approximately 1000 writes and 10000 reads per month (OnDemand capacity).  | $ 0.50 month |
 | Amazon SNS| 1000 email notifications per month | $ 0.00 |
 | Amazon EventBridge| 1000 invocations per month | $ 0.00 |
+
+
+_We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
 
 
 ## Prerequisites
