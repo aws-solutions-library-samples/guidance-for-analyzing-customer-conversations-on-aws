@@ -51,7 +51,7 @@ These insights are stored in a DynamoDB table, empowering retailers generate rep
 
 2.AWS Lambda function uses Amazon Transcribe to convert the audio call into a text file and stores the resultant text files in the output S3 location.
   
-3.The S3 buckets storing text transcripts (step 1.a) and output of Amazon Transcribe (step 2), are configured to call an AWS Lambda when a new object is available. This Lambda function uses Amazon Bedrock hosted Anthropic Claude 3 Sonnet model to generate summary and sentiment of the contact center conversations in the input file. This function also uses a prompt template that can be customized as needed to control input context passed to the foundation models.
+3.The S3 buckets storing text transcripts (step 1.a) and output of Amazon Transcribe (step 2), are configured to call an AWS Lambda when a new object is available. This Lambda function uses Amazon Bedrock hosted Anthropic Claude 3.5 Sonnet model to generate summary and sentiment of the contact center conversations in the input file. This function also uses a prompt template that can be customized as needed to control input context passed to the foundation models.
 
 4.AWS Lambda then parses the JSON output from Amazon Bedrock and persists the key details like conversation summary, customer and agent sentiments, confidence scores and action items derived from the conversations in Amazon DynamoDB.
   
@@ -88,7 +88,7 @@ The following table provides a sample cost breakdown for deploying this Guidance
 | Amazon Transcribe| 1000 calls per month with each call 10 minutes (1000*10 minutes) + PII redaction  | $ 122 month |
 | Amazon S3| 5 GB with Standard Storage | $ 0.15 month |
 | AWS Lambda| 3000 invocations per month | $ 0.03 month  |
-| Amazon Bedrock | Anthropic Claude 3 Sonnet - 1M input & output tokens per month | $ 18 month |
+| Amazon Bedrock | Anthropic Claude 3.5 Sonnet - 1M input & output tokens per month | $ 18 month |
 | Amazon DynamoDB| 1GB storage, with average item size 100 KB. Approximately 1000 writes and 10000 reads per month (OnDemand capacity).  | $ 0.50 month |
 | Amazon SNS| 1000 email notifications per month | $ 0.00 |
 | Amazon EventBridge| 1000 invocations per month | $ 0.00 |
@@ -97,7 +97,7 @@ The following table provides a sample cost breakdown for deploying this Guidance
 
 ## Prerequisites
 
-This deployment requires you to have access to the Claude 3 Sonnet model. This can be requested through the Bedrock console as per the [Bedrock Model access instructions](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html).
+This deployment requires you to have access to the Claude 3.5 Sonnet model. This can be requested through the Bedrock console as per the [Bedrock Model access instructions](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html).
 
 Ensure the AWS CLI is installed using the [following instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
