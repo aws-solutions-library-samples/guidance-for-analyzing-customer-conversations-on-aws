@@ -51,7 +51,7 @@ These insights are stored in a DynamoDB table, empowering retailers generate rep
 
 2.AWS Lambda function uses Amazon Transcribe to convert the audio call into a text file and stores the resultant text files in the output S3 location.
   
-3.The S3 buckets storing text transcripts (step 1.a) and output of Amazon Transcribe (step 2), are configured to call an AWS Lambda when a new object is available. This Lambda function uses Amazon Bedrock hosted Anthropic Claude 3 Sonnet model to generate summary and sentiment of the contact center conversations in the input file. This function also uses a prompt template that can be customized as needed to control input context passed to the foundation models.
+3.The S3 buckets storing text transcripts (step 1.a) and output of Amazon Transcribe (step 2), are configured to call an AWS Lambda when a new object is available. This Lambda function uses Amazon Bedrock hosted Anthropic Claude 3 sonnet model to generate summary and sentiment of the contact center conversations in the input file. This function also uses a prompt template that can be customized as needed to control input context passed to the foundation models.
 
 4.AWS Lambda then parses the JSON output from Amazon Bedrock and persists the key details like conversation summary, customer and agent sentiments, confidence scores and action items derived from the conversations in Amazon DynamoDB.
   
@@ -61,7 +61,7 @@ These insights are stored in a DynamoDB table, empowering retailers generate rep
     
 7.Amazon S3, then triggers an event to call Amazon Simple Notification Service, which sends an email to the subscribed users. These business users, can review the analysis results and take necessary actions to improve the customer experiences.
    
-8.Optionally, the retailers can use Amazon QuickSight to build visual dashboards and monitor the conversation analysis results over time. Amazon Athena Dynamo DB connector can be used to retrieve data from Amazon DynamoDB for use on Amazon QuickSight.(https://aws.amazon.com/blogs/big-data/visualize-amazon-dynamodb-insights-in-amazon-quicksight-using-the-amazon-athena-dynamodb-connector-and-aws-glue/)
+
 
 ## AWS services used
 - Amazon Transcribe
@@ -69,37 +69,35 @@ These insights are stored in a DynamoDB table, empowering retailers generate rep
 - Amazon Bedrock
 - Amazon S3
 - Amazon DynamoDB
-- Amazon Athena
 - Amazon SNS
 - Amazon EventBridge
 - Amazon CloudWatch
    
 ### Cost
 
-_You are responsible for the cost of the AWS services used while running this Guidance. As of May 2024, the cost for running this Guidance with the default settings in the us-east-1 region is approximately $300 per month for processing 1000 calls that average 10 minutes in length._
+_You are responsible for the cost of the AWS services used while running this Guidance. As of May 2024, the cost for running this Guidance with the default settings in the us-east-1 region is approximately $140 per month for processing 1000 calls that average 5 minutes in length._
 
 _We recommend creating a [Budget](https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html) through [AWS Cost Explorer](https://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this Guidance._
 
 ### Sample Cost Table
 
-**Note : Once you have created a sample cost table using AWS Pricing Calculator, copy the cost breakdown to below table and upload a PDF of the cost estimation on BuilderSpace.**
-
 The following table provides a sample cost breakdown for deploying this Guidance with the default parameters in the US East (N. Virginia) Region for one month.
 
 | AWS service  | Dimensions | Cost [USD] |
 | ----------- | ------------ | ------------ |
-| Amazon Transcribe| 10,00 calls per month with each call 10 minutes (1000*10 minutes) + PII redaction  | $ 264 month |
-| Amazon S3| 50 GB with Standard Storage | $ 1.15 month |
+| Amazon Transcribe| 1000 calls per month with each call 10 minutes (1000*10 minutes) + PII redaction  | $ 122 month |
+| Amazon S3| 5 GB with Standard Storage | $ 0.15 month |
 | AWS Lambda| 3000 invocations per month | $ 0.03 month  |
-| Amazon Bedrock | Anthropic Claude 3 Sonnet - 1M input & output tokens per month | $ 18 month |
-| Amazon DynamoDB| 50GB storage,Average item size 100 KB  | $ 12.50 month |
+| Amazon Bedrock | Anthropic Claude 3 sonnet - 1M input & output tokens per month | $ 18 month |
+| Amazon DynamoDB| 1GB storage, with average item size 100 KB. Approximately 1000 writes and 10000 reads per month (OnDemand capacity).  | $ 0.50 month |
 | Amazon SNS| 1000 email notifications per month | $ 0.00 |
 | Amazon EventBridge| 1000 invocations per month | $ 0.00 |
 
 
+
 ## Prerequisites
 
-This deployment requires you to have access to the Claude 3 Sonnet model. This can be requested through the Bedrock console as per the [Bedrock Model access instructions](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html).
+This deployment requires you to have access to the Claude 3 sonnet model. This can be requested through the Bedrock console as per the [Bedrock Model access instructions](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html).
 
 Ensure the AWS CLI is installed using the [following instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
@@ -195,7 +193,7 @@ You can adjust the sentiment threshold that controls when a conversation is adde
 5. Update the SentimentThresholdParameter and click Next
 6. Leave all other settings as default and submit the changes.
 
-You can also extend this guidance by using the Athena DynamoDB connector with QuickSight to visualise the conversation analysis results over time.
+You can also extend this guidance to use the analysis metrics and build BI dashboards to visualize and compare data over a period of time. 
 
 ## Cleanup
 
