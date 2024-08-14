@@ -7,7 +7,7 @@ from botocore.exceptions import ClientError
 
 promptTemplate = """\n\nHuman: You are a summarisation assistant. Your task is to summarise a call transcription between an agent and a customer.
 Create a JSON document with the following fields:
-call_summary - A summary of the call in less than 250 words
+call_summary - A summary of the call in less than 250 words. If the transript does not seem to be a call between a customer service agent and a customer, put EXACTLY 'Unrelated transcript' for this field.
 overall_sentiment_score - The overall sentiment of the call on a scale of 1-10
 overall_sentiment - The overall sentiment of the call. This should be positive, negative or neutral
 overall_sentiment_confidence - How confident you are about the overall sentiment on a scale of 0 to 1
@@ -39,9 +39,7 @@ def lambda_handler(event, context):
 
     # Add the reviews to the LLM prompt
     prompt = promptTemplate.format(transcript=data)
-    
-    print(prompt)
-    
+
     # Invoke the LLM
     print("Invoking bedrock")
     bedrock = boto3.client("bedrock-runtime", region_name=os.environ['AWS_REGION']) # Bedrock is not currently available in all regions
@@ -84,6 +82,14 @@ def lambda_handler(event, context):
         
         analysis = json.loads(output_list[0].get("text"))
         print ("response_body", analysis)
+
+        # make sure transcript is related to conversation between agent and customer
+        if analysis["customer_sentiment"] == 'Unrelated transcript':
+            return {
+            'statusCode': 400,
+            'body': json.dumps('No answer found - transcript does not seem to be a call between a customer and agent.')
+            }
+
         
         # Store the analysis in DynamoDB
         print("Saving to DynamoDB")
