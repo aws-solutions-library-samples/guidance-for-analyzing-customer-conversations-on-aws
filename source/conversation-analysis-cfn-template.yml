@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Template for conversation analysis
+Description: SO9504 Guidance for Analyzing Customer Conversations on AWS
 
 Parameters:
   NotificationEmail:
