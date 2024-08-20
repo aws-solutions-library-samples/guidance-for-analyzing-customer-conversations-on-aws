@@ -1,4 +1,4 @@
-# Solution Guidance for Analyzing Customer Conversation on AWS
+# Guidance for Analyzing Customer Conversation on AWS
 
 
 
@@ -28,13 +28,13 @@ This Guidance helps retail organizations harness the power of voice and chat ana
 
 The goal is to provide a data-driven approach to truly understanding the voice of the retail customer. This allows identification of key pain points or opportunities to enhance the overall shopping experience - from the customer's perspective.
 
-Rather than relying solely on anecdotal feedback or manual review of call/chat logs, this solution leverages speech-to-text and natural language processing to automate the transcription and analysis process. This not only saves significant time and resources for retail teams, but also provides deeper, more comprehensive insights that can directly inform strategic business decisions.
+Rather than relying solely on anecdotal feedback or manual review of call/chat logs, this guidance leverages speech-to-text and natural language processing to automate the transcription and analysis process. This not only saves significant time and resources for retail teams, but also provides deeper, more comprehensive insights that can directly inform strategic business decisions.
 
-By turning rich customer conversations into actionable data, this solution empowers retailers to make informed, customer-centric decisions that drive satisfaction, loyalty, and ultimately, sales growth
+By turning rich customer conversations into actionable data, this Guidance empowers retailers to make informed, customer-centric decisions that drive satisfaction, loyalty, and ultimately, sales growth
 
-## Solution Overview
+## Overview
 
-This solution provides comprehensive customer conversation analytics, leveraging transcription and analysis of both customer service phone calls and online chat interactions.
+This Guidance provides comprehensive customer conversation analytics, leveraging transcription and analysis of both customer service phone calls and online chat interactions.
 
 To enable this analysis, the system first automatically transcribes audio recordings of customer calls using Amazon Transcribe.The transcribed text from voice calls and text messages from the chat conversations, are then analyzed using the foundation model to generate valuable insights - including conversation summary, overall sentiment of both the agent and customer, derived action items from the conversation, and foundation model confidence scores on the sentiment scores.
 
@@ -107,7 +107,7 @@ There are no specific operating system requirements. These deployment instructio
 
 ## Deployment Steps
 
-The solution is deployed using a CloudFormation template, but as this relies on Python code files, the template must be packaged first.
+The Guidance is deployed using a CloudFormation template, but as this relies on Python code files, the template must be packaged first.
 To package the template:
 
 1. Clone the repo using command 
